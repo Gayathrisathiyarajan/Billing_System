@@ -1,0 +1,30 @@
+<h2>Invoice </h2>
+<p>Customer: {{ purchase.customer.email }}</p>
+<p>Date: {{ purchase.created_at |date:"d-m-Y H:i" }}</p>
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Line Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>₹{{ item.unit_price }}</td>
+            <td>₹{{ item.line_total }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p><strong>Subtotal:</strong> ₹{{ purchase.subtotal }}</p>
+<p><strong>Tax:</strong> ₹{{ purchase.tax_total }}</p>
+<p><strong>Grand Total:</strong> ₹{{ purchase.grand_total }}</p>
+<p><strong>Paid:</strong> ₹{{ purchase.paid_amount }}</p>
+<p><strong>Change Due:</strong> ₹{{ purchase.change_due }}</p>

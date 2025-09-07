@@ -1,0 +1,32 @@
+<h2>Invoice</h2>
+<p>Dear {{ purchase.customer.email }},</p>
+<p>Thank you for shopping with us! Here are your order details:</p>
+
+<table border="1" cellspacing="0" cellpadding="5">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Line Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>₹{{ item.unit_price }}</td>
+            <td>₹{{ item.line_total }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p><strong>Subtotal:</strong> ₹{{ purchase.subtotal }}</p>
+<p><strong>Tax:</strong> ₹{{ purchase.tax_total }}</p>
+<p><strong>Total: ₹{{ purchase.grand_total }}</strong></p>
+<p><strong>Paid: ₹{{ purchase.paid_amount }}</strong></p>
+<p><strong>Change Due: ₹{{ purchase.change_due }}</strong></p>
+
+<p>We hope to see you again soon!</p>

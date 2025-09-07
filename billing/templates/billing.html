@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Billing Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 80%; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        .section { margin: 20px 0; padding: 10px; border: 1px solid #aaa; }
+        label { display: inline-block; width: 120px; }
+        .btn { padding: 6px 12px; margin-top: 10px; cursor: pointer; }
+        .btn-cancel { background: #ccc; }
+        .btn-generate { background: #4CAF50; color: white; }
+    </style>
+</head>
+<body>
+    <h2>Billing Page</h2>
+
+<div class="section">
+    <label>Customer Email:</label>
+    <input type="email" name="customer_email" id="customer_email" form="billForm" required>
+
+    <!-- Separate form for previous purchases -->
+    <form id="previousForm" method="post" action="{% url 'billing:purchases_list' %}" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="email" id="hiddenEmail">
+        <button type="submit" id="previousBtn"
+                class="btn btn-history"
+                style="display:none; margin-left:15px; background:#2196F3; color:white;">
+            View Previous Purchases
+        </button>
+    </form>
+</div>
+
+<!-- Bill form -->
+<form id="billForm" method="post" action="{% url 'billing:generate_bill' %}">
+    {% csrf_token %}
+    <div class="section">
+        <h3>Bill Section</h3>
+        <table id="items-table">
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="item-row">
+                    <td>
+                        <input name="product_id[]" list="productList" required>
+                        <datalist id="productList">
+                            {% for p in products %}
+                                <option value="{{ p.product_code }}">{{ p.name }} - ₹{{ p.unit_price }}</option>
+                            {% endfor %}
+                        </datalist>
+                    </td>
+                    <td><input type="number" name="quantity[]" value="1" min="1" required></td>
+                    <td><button type="button" class="remove-row">Remove</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button id="add-row" type="button">Add New</button>
+    </div>
+
+    <div class="section">
+        <h3>Denominations</h3>
+        <table>
+            {% for d in denominations %}
+            <tr>
+                <td>₹{{ d.value }}</td>
+                <td><input type="number" name="denom_{{ d.value }}" value="0" min="0"></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="section">
+        <label>Customer Paid amount:</label>
+        <input type="number" name="paid_amount" step="0.01" required>
+    </div>
+
+    <button type="reset" class="btn btn-cancel">Cancel</button>
+    <button type="submit" class="btn btn-generate">Generate Bill</button>
+</form>
+
+    <script>
+        document.getElementById("customer_email").addEventListener("change", function () {
+        const email = this.value;
+        const btn = document.getElementById("previousBtn");
+        const hiddenInput = document.getElementById("hiddenEmail");
+        if (email) {
+            fetch(`/check_previous/?email=${encodeURIComponent(email)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.exists) {
+                        hiddenInput.value = email;
+                        btn.style.display = "inline-block";
+                    } else {
+                        btn.style.display = "none";
+                    }
+                });
+        } else {
+            btn.style.display = "none";
+        }
+    });
+
+        document.getElementById('add-row').addEventListener('click', function(){
+            const tbody = document.querySelector('#items-table tbody');
+            const row = document.querySelector('.item-row').cloneNode(true);
+            row.querySelectorAll('input').forEach(i => i.value = (i.type === 'number') ? 1 : '');
+            tbody.appendChild(row);
+        });
+
+        document.addEventListener('click', function(e){
+            if(e.target.matches('.remove-row')){
+                const rows = document.querySelectorAll('.item-row');
+                if(rows.length > 1) e.target.closest('tr').remove();
+            }
+        });
+
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 90%; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background: #f2f2f2; }
+        h3 { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Billing Page</h2>
+
+    <p><strong>Customer Email:</strong> {{ purchase.customer.email }}</p>
+
+    <table border="1">
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>Name</th>
+            <th>Unit Price</th>
+            <th>Quantity</th>
+            <th>Purchase Price</th>
+            <th>Tax %</th>
+            <th>Tax Amount</th>
+            <th>Total Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            <td>{{ row.product_code }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.unit_price }}</td>
+            <td>{{ row.quantity }}</td>
+            <td>{{ row.line_total }}</td>
+            <td>{{ row.tax_percent }}</td>
+            <td>{{ row.tax_amount }}</td>
+            <td>{{ row.total_with_tax }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    <!-- Totals -->
+    <p>Total price without tax: {{ purchase.subtotal }}</p>
+    <p>Total tax payable: {{ purchase.tax_total }}</p>
+    <p>Net price of the purchased items: {{ purchase.grand_total }}</p>
+    <p>Paid: {{ purchase.paid_amount }}</p>
+    <p><strong>Balance payable to the customer: {{ purchase.change_due }}</strong></p>
+
+    <h3>Balance Denomination</h3>
+    {% if breakdown %}
+        <ul>
+            {% for val, cnt in breakdown.items %}
+                <li>₹{{ val }} : {{ cnt }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p style="color:red;">No exact change available</p>
+    {% endif %}
+</body>
+</html>

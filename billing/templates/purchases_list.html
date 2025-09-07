@@ -1,0 +1,32 @@
+<h2>Previous Purchases</h2>
+
+<form method="post">
+    {% if email %}
+        <p><strong>Customer Email:</strong> {{ email }}</p>
+    {% endif %}
+</form>
+
+{% if purchases %}
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Invoice ID</th>
+                <th>Date</th>
+                <th>Grand Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for purchase in purchases %}
+            <tr>
+                <td>{{ purchase.id }}</td>
+                <td>{{ purchase.created_at |date:"d-m-Y H:i" }}</td>
+                <td>₹{{ purchase.grand_total }}</td>
+                <td><a href="{% url 'billing:purchase_detail' purchase.id %}">View Details</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% elif email %}
+    <p>No purchases found for this email.</p>
+{% endif %}
