@@ -14,7 +14,7 @@ A Django-based billing system that allows tracking of products, generating bills
 
 1. Add products with fields:
    - Product ID
-   - Name
+   - Name  
    - Available stock
    - Unit price
    - Tax percentage
